@@ -1,0 +1,17 @@
+{
+  "name": "planeso-backup",
+  "version": "1.0.0",
+  "description": "Simple tool to create an export of a plane.so workspace",
+  "keywords": [
+    "Plane.so",
+    "Backup",
+    "Export"
+  ],
+  "license": "MIT",
+  "author": "Simon Sedlatschek <code@sedlatschek.com>",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
