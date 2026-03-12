@@ -1,6 +1,7 @@
 import type { PlaneSoClient } from '../plane-so/index.js';
 import { stringify } from '../utility.js';
 import type { Backup } from './Backup.js';
+import { gatherCustomerProperties } from './customer-properties.js';
 import { gatherCustomers } from './customer.js';
 import { gatherInitiatives } from './initiative.js';
 import { gatherProjects } from './project.js';
@@ -11,11 +12,13 @@ export async function backupWorkspace(client: PlaneSoClient, backup: Backup): Pr
     projects,
     teamspaces,
     customers,
+    customerProperties,
     initiatives,
   ] = await Promise.all([
     gatherProjects(client),
     gatherTeamspaces(client),
     gatherCustomers(client),
+    gatherCustomerProperties(client),
     gatherInitiatives(client),
   ]);
 
@@ -24,6 +27,7 @@ export async function backupWorkspace(client: PlaneSoClient, backup: Backup): Pr
     projects,
     teamspaces,
     customers,
+    customerProperties,
     initiatives,
   }));
 }

@@ -29,7 +29,7 @@ export class PlaneSoWorkspaceClient {
   }
 
   public async getV1CustomerProperties(): Promise<ResponseArray<V1Entity>> {
-    return this.client.getPaginatedList(`v1/workspaces/${this.workspaceId}/customers-properties/`, V1EntitySchema);
+    return this.client.getPaginatedList(`v1/workspaces/${this.workspaceId}/customer-properties/`, V1EntitySchema);
   }
 
   public async getV1Teamspaces(): Promise<ResponseArray<V1Entity>> {
