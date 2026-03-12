@@ -1,3 +1,4 @@
+import { ADDED_PROPERTIES_KEY } from '../constants.js';
 import type { PlaneSoClient } from '../plane-so/index.js';
 import type { V1Entity } from '../plane-so/models/V1Entity.js';
 import type { PlaneSoCustomerClient } from '../plane-so/namespaces/customer.js';
@@ -12,6 +13,6 @@ async function enrichCustomer(client: PlaneSoCustomerClient, customer: V1Entity)
 
   return {
     ...customer,
-    requests,
+    [ADDED_PROPERTIES_KEY]: { requests },
   };
 }

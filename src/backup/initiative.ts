@@ -1,3 +1,4 @@
+import { ADDED_PROPERTIES_KEY } from '../constants.js';
 import type { PlaneSoClient } from '../plane-so/index.js';
 import type { V1Entity } from '../plane-so/models/V1Entity.js';
 import type { PlaneSoInitiativeClient } from '../plane-so/namespaces/initiative.js';
@@ -14,8 +15,10 @@ async function enrichInitiative(client: PlaneSoInitiativeClient, initiative: V1E
 
   return {
     ...initiative,
-    labels,
-    projects,
-    epics,
+    [ADDED_PROPERTIES_KEY]: {
+      labels,
+      projects,
+      epics,
+    },
   };
 }

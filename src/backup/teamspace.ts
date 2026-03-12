@@ -1,3 +1,4 @@
+import { ADDED_PROPERTIES_KEY } from '../constants.js';
 import type { PlaneSoClient } from '../plane-so/index.js';
 import type { V1Entity } from '../plane-so/models/V1Entity.js';
 import type { PlaneSoTeamspaceClient } from '../plane-so/namespaces/teamspace.js';
@@ -13,7 +14,9 @@ async function enrichTeamspace(client: PlaneSoTeamspaceClient, teamspace: V1Enti
 
   return {
     ...teamspace,
-    members,
-    projects,
+    [ADDED_PROPERTIES_KEY]: {
+      members,
+      projects,
+    },
   };
 }
