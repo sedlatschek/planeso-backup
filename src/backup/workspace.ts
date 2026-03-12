@@ -6,14 +6,14 @@ import { gatherInitiatives } from './initiative.js';
 import { gatherProjects } from './project.js';
 import { gatherTeamspaces } from './teamspace.js';
 
-export async function backupWorkspace(client: PlaneSoClient, workspaceId: string, backup: Backup): Promise<void> {
-  const projects = await gatherProjects(client, workspaceId);
-  const teamspaces = await gatherTeamspaces(client, workspaceId);
-  const customers = await gatherCustomers(client, workspaceId);
-  const initiatives = await gatherInitiatives(client, workspaceId);
+export async function backupWorkspace(client: PlaneSoClient, backup: Backup): Promise<void> {
+  const projects = await gatherProjects(client);
+  const teamspaces = await gatherTeamspaces(client);
+  const customers = await gatherCustomers(client);
+  const initiatives = await gatherInitiatives(client);
 
-  backup.add(`${workspaceId}.json`, stringify({
-    id: workspaceId,
+  backup.add(`${client.workspace.id}.json`, stringify({
+    id: client.workspace.id,
     projects,
     teamspaces,
     customers,

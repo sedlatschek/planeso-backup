@@ -14,21 +14,19 @@ import { PlaneSoCustomerClient } from './namespaces/customer.js';
 export type PlaneSoClientOptions = {
   baseUrl?: string
   accessToken: string
+  workspaceId: string
 };
 
 export type PlaneSoClientConfig = {
   baseUrl: string
   accessToken: string
+  workspaceId: string
 };
 
 export class PlaneSoClient {
   private readonly config: PlaneSoClientConfig;
 
   private readonly workspaceClient: PlaneSoWorkspaceClient;
-  private readonly projectsClient: PlaneSoProjectClient;
-  private readonly teamspaceClient: PlaneSoTeamspaceClient;
-  private readonly initiativeClient: PlaneSoInitiativeClient;
-  private readonly customerClient: PlaneSoCustomerClient;
 
   private lastRequestAt = 0;
   private queue: Promise<void> = Promise.resolve();
@@ -39,31 +37,27 @@ export class PlaneSoClient {
       ...options,
     };
 
-    this.workspaceClient = new PlaneSoWorkspaceClient(this);
-    this.projectsClient = new PlaneSoProjectClient(this);
-    this.teamspaceClient = new PlaneSoTeamspaceClient(this);
-    this.initiativeClient = new PlaneSoInitiativeClient(this);
-    this.customerClient = new PlaneSoCustomerClient(this);
+    this.workspaceClient = new PlaneSoWorkspaceClient(this, this.config.workspaceId);
   }
 
   public get workspace(): PlaneSoWorkspaceClient {
     return this.workspaceClient;
   }
 
-  public get project(): PlaneSoProjectClient {
-    return this.projectsClient;
+  public project(projectId: string): PlaneSoProjectClient {
+    return new PlaneSoProjectClient(this, projectId);
   }
 
-  public get teamspace(): PlaneSoTeamspaceClient {
-    return this.teamspaceClient;
+  public teamspace(teamspaceId: string): PlaneSoTeamspaceClient {
+    return new PlaneSoTeamspaceClient(this, teamspaceId);
   }
 
-  public get initiative(): PlaneSoInitiativeClient {
-    return this.initiativeClient;
+  public initiative(initiativeId: string): PlaneSoInitiativeClient {
+    return new PlaneSoInitiativeClient(this, initiativeId);
   }
 
-  public get customer(): PlaneSoCustomerClient {
-    return this.customerClient;
+  public customer(customerId: string): PlaneSoCustomerClient {
+    return new PlaneSoCustomerClient(this, customerId);
   }
 
   private waitRateLimit(): Promise<void> {

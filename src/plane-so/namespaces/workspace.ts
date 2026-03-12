@@ -10,29 +10,33 @@ import {
 import { type ResponseArray } from '../response.js';
 
 export class PlaneSoWorkspaceClient {
-  public constructor(private readonly client: PlaneSoClient) {}
+  public constructor(private readonly client: PlaneSoClient, private readonly workspaceId: string) {}
 
-  public async getV1Projects(workspaceId: string): Promise<ResponseArray<V1Project>> {
-    return this.client.get(`v1/workspaces/${workspaceId}/projects/`, V1ProjectSchema);
+  public get id(): string {
+    return this.workspaceId;
   }
 
-  public async getV1Initiatives(workspaceId: string): Promise<ResponseArray<V1Entity>> {
-    return this.client.get(`v1/workspaces/${workspaceId}/initiatives/`, V1EntitySchema);
+  public async getV1Projects(): Promise<ResponseArray<V1Project>> {
+    return this.client.get(`v1/workspaces/${this.workspaceId}/projects/`, V1ProjectSchema);
   }
 
-  public async getV1Customers(workspaceId: string): Promise<ResponseArray<V1Entity>> {
-    return this.client.get(`v1/workspaces/${workspaceId}/customers/`, V1EntitySchema);
+  public async getV1Initiatives(): Promise<ResponseArray<V1Entity>> {
+    return this.client.get(`v1/workspaces/${this.workspaceId}/initiatives/`, V1EntitySchema);
   }
 
-  public async getV1CustomerProperties(workspaceId: string): Promise<ResponseArray<V1Entity>> {
-    return this.client.get(`v1/workspaces/${workspaceId}/customers-properties/`, V1EntitySchema);
+  public async getV1Customers(): Promise<ResponseArray<V1Entity>> {
+    return this.client.get(`v1/workspaces/${this.workspaceId}/customers/`, V1EntitySchema);
   }
 
-  public async getV1Teamspaces(workspaceId: string): Promise<ResponseArray<V1Entity>> {
-    return this.client.get(`v1/workspaces/${workspaceId}/teamspaces/`, V1EntitySchema);
+  public async getV1CustomerProperties(): Promise<ResponseArray<V1Entity>> {
+    return this.client.get(`v1/workspaces/${this.workspaceId}/customers-properties/`, V1EntitySchema);
   }
 
-  public async getV1Stickes(workspaceId: string): Promise<ResponseArray<V1Entity>> {
-    return this.client.get(`v1/workspaces/${workspaceId}/stickies/`, V1EntitySchema);
+  public async getV1Teamspaces(): Promise<ResponseArray<V1Entity>> {
+    return this.client.get(`v1/workspaces/${this.workspaceId}/teamspaces/`, V1EntitySchema);
+  }
+
+  public async getV1Stickes(): Promise<ResponseArray<V1Entity>> {
+    return this.client.get(`v1/workspaces/${this.workspaceId}/stickies/`, V1EntitySchema);
   }
 }

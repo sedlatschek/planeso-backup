@@ -19,12 +19,13 @@ async function main(): Promise<void> {
   const config = getConfig();
 
   const client = new PlaneSoClient({
+    workspaceId: config.PLANE_WORKSPACE,
     baseUrl: config.PLANE_API_BASE_URL,
     accessToken: config.PLANE_API_TOKEN,
   });
 
   const backup = new Backup();
-  await backupWorkspace(client, config.PLANE_WORKSPACE, backup);
+  await backupWorkspace(client, backup);
   await backup.finalize(join(outputDir, `planeso_backup_${isoTimestamp()}.zip`));
 }
 
