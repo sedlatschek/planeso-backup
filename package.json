@@ -1,6 +1,6 @@
 {
   "name": "planeso-backup",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Simple tool to create an export of a plane.so workspaces",
   "keywords": [
     "plane.so",
