@@ -5,6 +5,7 @@ import { gatherCustomerProperties } from './customer-properties.js';
 import { gatherCustomers } from './customer.js';
 import { gatherInitiatives } from './initiative.js';
 import { gatherProjects } from './project.js';
+import { gatherStickies } from './stickies.js';
 import { gatherTeamspaces } from './teamspace.js';
 
 export async function backupWorkspace(client: PlaneSoClient, backup: Backup): Promise<void> {
@@ -14,12 +15,14 @@ export async function backupWorkspace(client: PlaneSoClient, backup: Backup): Pr
     customers,
     customerProperties,
     initiatives,
+    stickies,
   ] = await Promise.all([
     gatherProjects(client),
     gatherTeamspaces(client),
     gatherCustomers(client),
     gatherCustomerProperties(client),
     gatherInitiatives(client),
+    gatherStickies(client),
   ]);
 
   backup.add(`${client.workspace.id}.json`, stringify({
@@ -29,5 +32,6 @@ export async function backupWorkspace(client: PlaneSoClient, backup: Backup): Pr
     customers,
     customerProperties,
     initiatives,
+    stickies,
   }));
 }
