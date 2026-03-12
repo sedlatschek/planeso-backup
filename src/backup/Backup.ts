@@ -1,20 +1,14 @@
-import { tmpdir } from 'os';
 import {
   writeFile,
-  copyFile,
   rm,
 } from 'fs/promises';
 import JSZip from 'jszip';
 import { logger } from '../logger.js';
-import { join } from 'path';
-import { isoTimestamp } from '../utility.js';
 
 export class Backup {
-  private readonly path: string;
   private readonly zip: JSZip;
 
   public constructor() {
-    this.path = join(tmpdir(), `planeso-backup-${isoTimestamp()}.zip`);
     this.zip = new JSZip();
   }
 
@@ -29,8 +23,7 @@ export class Backup {
       compression: 'DEFLATE',
       compressionOptions: { level: 9 },
     });
-    await writeFile(this.path, buffer);
-    logger.info(`Backup created at ${this.path} (${buffer.byteLength} total bytes)`);
-    await copyFile(this.path, archivePath);
+    await writeFile(archivePath, buffer);
+    logger.info(`Backup created at ${archivePath} (${buffer.byteLength} total bytes)`);
   }
 }
