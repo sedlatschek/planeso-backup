@@ -1,6 +1,6 @@
 {
   "name": "planeso-backup",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Simple tool to create an export of a plane.so workspaces",
   "keywords": [
     "plane.so",
@@ -12,6 +12,14 @@
   "author": "Simon Sedlatschek <code@sedlatschek.com>",
   "type": "module",
   "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sedlatschek/planeso-backup.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sedlatschek/planeso-backup/issues"
+  },
+  "homepage": "https://github.com/sedlatschek/planeso-backup#readme",
   "bin": {
     "planeso-backup": "dist/index.js"
   },
@@ -39,5 +47,8 @@
     "pino": "^10.3.1",
     "pino-pretty": "^13.1.3",
     "zod": "^4.3.6"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }

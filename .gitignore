@@ -1,5 +1,6 @@
 .werk
 node_modules
 dist
+*.tgz
 *.zip
 *.config.yml
