@@ -19,6 +19,7 @@ async function enrichProject(client: PlaneSoProjectClient, project: V1Project): 
     { results: cycles },
     { results: modules },
     { results: epics },
+    members,
     workItemTypes,
     workItems,
   ] = await Promise.all([
@@ -27,6 +28,7 @@ async function enrichProject(client: PlaneSoProjectClient, project: V1Project): 
     client.getV1Cycles(),
     client.getV1Modules(),
     client.getV1Epics(),
+    client.getV1Members(),
     gatherWorkItemTypes(client),
     gatherWorkItems(client),
   ]);
@@ -39,6 +41,7 @@ async function enrichProject(client: PlaneSoProjectClient, project: V1Project): 
       cycles,
       modules,
       epics,
+      members,
       workItemTypes,
       workItems,
     },

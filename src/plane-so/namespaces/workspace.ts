@@ -39,4 +39,8 @@ export class PlaneSoWorkspaceClient {
   public async getV1Stickies(): Promise<ResponseArray<V1Entity>> {
     return this.client.getPaginatedList(`v1/workspaces/${this.workspaceId}/stickies/`, V1EntitySchema);
   }
+
+  public async getV1Members(): Promise<V1Entity[]> {
+    return this.client.getList(`v1/workspaces/${this.workspaceId}/members/`, V1EntitySchema);
+  }
 }

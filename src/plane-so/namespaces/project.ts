@@ -57,4 +57,8 @@ export class PlaneSoProjectClient {
   public async getV1Epics(): Promise<ResponseArray<V1Entity>> {
     return this.client.getPaginatedList(`v1/workspaces/${this.client.workspace.id}/projects/${this.projectId}/epics/`, V1EntitySchema);
   }
+
+  public async getV1Members(): Promise<V1Entity[]> {
+    return this.client.getList(`v1/workspaces/${this.client.workspace.id}/projects/${this.projectId}/members/`, V1EntitySchema);
+  }
 }
