@@ -15,9 +15,9 @@ jobs:
       TS_NODE_PROJECT: ${{ matrix.ts-project }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm cache clean --force
