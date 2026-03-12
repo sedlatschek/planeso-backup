@@ -1,16 +1,20 @@
 {
   "name": "planeso-backup",
   "version": "1.0.0",
-  "description": "Simple tool to create an export of a plane.so workspace",
+  "description": "Simple tool to create an export of a plane.so workspaces",
   "keywords": [
-    "Plane.so",
-    "Backup",
-    "Export"
+    "plane.so",
+    "plane",
+    "backup",
+    "export"
   ],
   "license": "MIT",
   "author": "Simon Sedlatschek <code@sedlatschek.com>",
   "type": "module",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "bin": {
+    "planeso-backup": "dist/index.js"
+  },
   "scripts": {
     "dev": "tsx src/index.ts .",
     "build": "rimraf dist && tsc",
