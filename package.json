@@ -16,7 +16,7 @@
     "planeso-backup": "dist/index.js"
   },
   "scripts": {
-    "dev": "tsx src/index.ts .",
+    "dev": "tsx src/index.ts . --debug",
     "build": "rimraf dist && tsc",
     "lint": "eslint . --fix"
   },

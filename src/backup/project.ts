@@ -1,3 +1,4 @@
+import { getCommandLineArguments } from '../arguments.js';
 import { ADDED_PROPERTIES_KEY } from '../constants.js';
 import type { PlaneSoClient } from '../plane-so/index.js';
 import type { V1Entity } from '../plane-so/models/V1Entity.js';
@@ -59,7 +60,8 @@ async function enrichWorkItemType(client: PlaneSoWorkItemTypeClient, workItemTyp
 }
 
 async function gatherWorkItems(client: PlaneSoProjectClient): Promise<V1Entity[]> {
-  const workItems = (await client.getV1WorkItems()).results.slice(0, 2); // TODO: remove limit and parallize
+  const { results } = await client.getV1WorkItems();
+  const workItems = getCommandLineArguments().debugMode ? results.slice(0, 5) : results;
   return await Promise.all(workItems.map(workItem => enrichWorkItem(client.workItem(workItem.id), workItem)));
 }
 

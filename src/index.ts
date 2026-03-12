@@ -7,13 +7,15 @@ import { backupWorkspace } from './backup/workspace.js';
 import { Backup } from './backup/Backup.js';
 import { join } from 'path';
 import { isoTimestamp } from './utility.js';
+import { getCommandLineArguments } from './arguments.js';
 
 async function main(): Promise<void> {
-  const args = process.argv.slice(2);
-  const outputDir = args[0];
-  if (!outputDir) {
-    logger.error('Usage: planeso-backup <output-directory>');
-    process.exit(1);
+  const {
+    outputDir,
+    debugMode,
+  } = getCommandLineArguments();
+  if (debugMode) {
+    logger.level = 'debug';
   }
 
   const config = getConfig();
