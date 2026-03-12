@@ -8,8 +8,8 @@ export async function gatherTeamspaces(client: PlaneSoClient): Promise<V1Entity[
 }
 
 async function enrichTeamspace(client: PlaneSoTeamspaceClient, teamspace: V1Entity): Promise<V1Entity> {
-  const { results: members } = await client.getV1TeamspaceMembers();
-  const { results: projects } = await client.getV1TeamspaceProjects();
+  const { results: members } = await client.getV1Members();
+  const { results: projects } = await client.getV1Projects();
 
   return {
     ...teamspace,

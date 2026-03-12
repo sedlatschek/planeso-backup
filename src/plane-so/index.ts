@@ -6,10 +6,11 @@ import {
 } from './response.js';
 import { PlaneSoProjectClient } from './namespaces/project.js';
 import { logger } from '../logger.js';
-import { stringify } from '../utility.js';
 import { PlaneSoTeamspaceClient } from './namespaces/teamspace.js';
 import { PlaneSoInitiativeClient } from './namespaces/initiative.js';
 import { PlaneSoCustomerClient } from './namespaces/customer.js';
+import { PlaneSoBackupResponseValidationError } from './errors/PlaneSoBackupResponseValidationError.js';
+import { PlaneSoBackupError } from './errors/PlaneSoBackupError.js';
 
 export type PlaneSoClientOptions = {
   baseUrl?: string
@@ -61,7 +62,7 @@ export class PlaneSoClient {
   }
 
   private waitRateLimit(): Promise<void> {
-    // Plane.so is rate limited to 60 requests per minute, so we wait at least 1100ms between requests to be safe.
+    // Plane.so is rate limited to 60 requests per minute, so we wait at least 1001ms between requests to be safe.
     // Uses a promise queue to prevent race conditions when multiple requests are made concurrently.
     const next = this.queue.then(async () => {
       const wait = 1001 - (Date.now() - this.lastRequestAt);
@@ -74,7 +75,7 @@ export class PlaneSoClient {
     return next;
   }
 
-  public async get<T>(endpoint: string, schema: z.ZodType<T>): Promise<ResponseArray<T>> {
+  private async fetchJson(endpoint: string): Promise<unknown> {
     await this.waitRateLimit();
     logger.info(`GET ${endpoint}`);
 
@@ -90,19 +91,56 @@ export class PlaneSoClient {
     } });
 
     if (!response.ok) {
-      throw new Error(`Request failed with status ${response.status}: ${response.statusText}`);
+      throw new PlaneSoBackupError(`Request failed with status ${response.status}: ${response.statusText}`);
     }
 
-    const json = await response.json();
-    const result = await responseArraySchema.extend({ results: schema.array() }).safeParseAsync(json);
+    return response.json();
+  }
+
+  public async getOne<T>(endpoint: string, schema: z.ZodType<T>): Promise<T> {
+    const payload = await this.fetchJson(endpoint);
+    const result = await schema.safeParseAsync(payload);
 
     if (!result.success) {
-      logger.error(`Failed to parse response from ${endpoint}: ${result.error}`);
-      throw new Error(`Failed to parse response from ${endpoint}:\nPayload:\n${stringify(json)}\nValidation errors:\n${result.error}`, { cause: result.error });
+      throw new PlaneSoBackupResponseValidationError({
+        endpoint,
+        payload,
+        cause: result.error,
+      });
+    }
+
+    return result.data;
+  }
+
+  public async getList<T>(endpoint: string, schema: z.ZodType<T>): Promise<T[]> {
+    const payload = await this.fetchJson(endpoint);
+    const result = await schema.array().safeParseAsync(payload);
+
+    if (!result.success) {
+      throw new PlaneSoBackupResponseValidationError({
+        endpoint,
+        payload,
+        cause: result.error,
+      });
+    }
+
+    return result.data;
+  }
+
+  public async getPaginatedList<T>(endpoint: string, schema: z.ZodType<T>): Promise<ResponseArray<T>> {
+    const payload = await this.fetchJson(endpoint);
+    const result = await responseArraySchema.extend({ results: schema.array() }).safeParseAsync(payload);
+
+    if (!result.success) {
+      throw new PlaneSoBackupResponseValidationError({
+        endpoint,
+        payload,
+        cause: result.error,
+      });
     }
 
     if (result.data.total_pages > 1) {
-      throw new Error('Pagination is not supported yet. Please implement pagination handling to retrieve all results.');
+      throw new PlaneSoBackupError('Pagination is not supported yet. Please implement pagination handling to retrieve all results.');
     }
 
     return result.data;

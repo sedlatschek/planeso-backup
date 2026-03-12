@@ -8,9 +8,9 @@ export async function gatherInitiatives(client: PlaneSoClient): Promise<V1Entity
 }
 
 async function enrichInitiative(client: PlaneSoInitiativeClient, initiative: V1Entity): Promise<V1Entity> {
-  const { results: labels } = await client.getV1InitiativeLabels();
-  const { results: projects } = await client.getV1InitiativeProjects();
-  const { results: epics } = await client.getV1InitiativeEpics();
+  const { results: labels } = await client.getV1Labels();
+  const { results: projects } = await client.getV1Projects();
+  const { results: epics } = await client.getV1Epics();
 
   return {
     ...initiative,

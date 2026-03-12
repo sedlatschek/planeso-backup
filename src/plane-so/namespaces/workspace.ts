@@ -17,26 +17,26 @@ export class PlaneSoWorkspaceClient {
   }
 
   public async getV1Projects(): Promise<ResponseArray<V1Project>> {
-    return this.client.get(`v1/workspaces/${this.workspaceId}/projects/`, V1ProjectSchema);
+    return this.client.getPaginatedList(`v1/workspaces/${this.workspaceId}/projects/`, V1ProjectSchema);
   }
 
   public async getV1Initiatives(): Promise<ResponseArray<V1Entity>> {
-    return this.client.get(`v1/workspaces/${this.workspaceId}/initiatives/`, V1EntitySchema);
+    return this.client.getPaginatedList(`v1/workspaces/${this.workspaceId}/initiatives/`, V1EntitySchema);
   }
 
   public async getV1Customers(): Promise<ResponseArray<V1Entity>> {
-    return this.client.get(`v1/workspaces/${this.workspaceId}/customers/`, V1EntitySchema);
+    return this.client.getPaginatedList(`v1/workspaces/${this.workspaceId}/customers/`, V1EntitySchema);
   }
 
   public async getV1CustomerProperties(): Promise<ResponseArray<V1Entity>> {
-    return this.client.get(`v1/workspaces/${this.workspaceId}/customers-properties/`, V1EntitySchema);
+    return this.client.getPaginatedList(`v1/workspaces/${this.workspaceId}/customers-properties/`, V1EntitySchema);
   }
 
   public async getV1Teamspaces(): Promise<ResponseArray<V1Entity>> {
-    return this.client.get(`v1/workspaces/${this.workspaceId}/teamspaces/`, V1EntitySchema);
+    return this.client.getPaginatedList(`v1/workspaces/${this.workspaceId}/teamspaces/`, V1EntitySchema);
   }
 
   public async getV1Stickes(): Promise<ResponseArray<V1Entity>> {
-    return this.client.get(`v1/workspaces/${this.workspaceId}/stickies/`, V1EntitySchema);
+    return this.client.getPaginatedList(`v1/workspaces/${this.workspaceId}/stickies/`, V1EntitySchema);
   }
 }
