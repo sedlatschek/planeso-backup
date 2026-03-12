@@ -5,15 +5,16 @@ import {
   rm,
 } from 'fs/promises';
 import JSZip from 'jszip';
-import { logger } from './logger.js';
+import { logger } from '../logger.js';
 import { join } from 'path';
+import { isoTimestamp } from '../utility.js';
 
 export class Backup {
   private readonly path: string;
   private readonly zip: JSZip;
 
   public constructor() {
-    this.path = join(tmpdir(), `planeso-backup-${new Date().toISOString().replace(/[:.]/g, '-')}.zip`);
+    this.path = join(tmpdir(), `planeso-backup-${isoTimestamp()}.zip`);
     this.zip = new JSZip();
   }
 

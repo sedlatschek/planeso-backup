@@ -7,7 +7,6 @@ export const responseArraySchema = z.object({
   count: z.number(),
   total_pages: z.number(),
   total_results: z.number(),
-  results: z.array(z.any()),
 });
 
 export type ResponseArray<T> = z.infer<typeof responseArraySchema> & { results: T[] };

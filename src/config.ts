@@ -4,6 +4,7 @@ dotenv.config();
 
 const configSchema = z.object({
   PLANE_WORKSPACE: z.string(),
+  PLANE_API_BASE_URL: z.string(),
   PLANE_API_TOKEN: z.string(),
 });
 

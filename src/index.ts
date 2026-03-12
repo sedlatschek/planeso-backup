@@ -1,40 +1,31 @@
 #!/usr/bin/env node
 
-import { Backup } from './backup.js';
 import { getConfig } from './config.js';
 import { logger } from './logger.js';
 import { PlaneSoClient } from './plane-so/index.js';
+import { backupWorkspace } from './backup/workspace.js';
+import { Backup } from './backup/Backup.js';
+import { join } from 'path';
+import { isoTimestamp } from './utility.js';
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
-  const outputFile = args[0];
-  if (!outputFile) {
-    logger.error('Usage: planeso-backup <output-file>');
+  const outputDir = args[0];
+  if (!outputDir) {
+    logger.error('Usage: planeso-backup <output-directory>');
     process.exit(1);
   }
 
   const config = getConfig();
 
-  const api = new PlaneSoClient({
-    baseUrl: 'https://api.plane.so/api',
+  const client = new PlaneSoClient({
+    baseUrl: config.PLANE_API_BASE_URL,
     accessToken: config.PLANE_API_TOKEN,
   });
 
   const backup = new Backup();
-
-  const projectsResponse = await api.workspace.getV1Projects(config.PLANE_WORKSPACE);
-  backup.add('projects.json', JSON.stringify(projectsResponse.results, null, 2));
-  logger.info(projectsResponse);
-
-  const statesResponse = await api.projects.getV1States(config.PLANE_WORKSPACE, '5801e923-7dd6-45b2-adc6-f79d8531c208');
-  backup.add('states.json', JSON.stringify(statesResponse.results, null, 2));
-  logger.info(statesResponse);
-
-  const labelsResponse = await api.projects.getV1Labels(config.PLANE_WORKSPACE, '5801e923-7dd6-45b2-adc6-f79d8531c208');
-  backup.add('labels.json', JSON.stringify(labelsResponse.results, null, 2));
-  logger.info(labelsResponse);
-
-  await backup.finalize(outputFile);
+  await backupWorkspace(client, config.PLANE_WORKSPACE, backup);
+  await backup.finalize(join(outputDir, `planeso_backup_${isoTimestamp()}.zip`));
 }
 
 try {
