@@ -9,7 +9,7 @@ export async function gatherCustomers(client: PlaneSoClient): Promise<V1Entity[]
 }
 
 async function enrichCustomer(client: PlaneSoCustomerClient, customer: V1Entity): Promise<V1Entity> {
-  const { results: requests } = await client.getV1CustomerRequests();
+  const { results: requests } = await client.getV1Requests();
 
   return {
     ...customer,
