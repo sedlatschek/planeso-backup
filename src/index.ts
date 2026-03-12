@@ -11,25 +11,30 @@ import { getCommandLineArguments } from './arguments.js';
 
 async function main(): Promise<void> {
   const {
-    outputDir,
+    configPath,
     debugMode,
   } = getCommandLineArguments();
   if (debugMode) {
     logger.level = 'debug';
   }
 
-  const config = getConfig();
+  const {
+    api: {
+      baseUrl, accessToken,
+    }, backup: {
+      workspaces, outputDir,
+    },
+  } = await getConfig(configPath);
 
   const backup = new Backup();
 
-  const workspaceIds = config.PLANE_WORKSPACES.split(',').map(s => s.trim());
-  for (const workspaceId of workspaceIds) {
+  for (const workspaceId of workspaces) {
     logger.info(`Backing up workspace: ${workspaceId}`);
 
     const client = new PlaneSoClient({
       workspaceId,
-      baseUrl: config.PLANE_API_BASE_URL,
-      accessToken: config.PLANE_API_TOKEN,
+      baseUrl,
+      accessToken,
     });
     await backupWorkspace(client, backup);
   }

@@ -1,0 +1,7 @@
+api:
+  baseUrl: https://api.plane.so/api
+  accessToken: my-access-token
+backup:
+  outputDir: ./backups
+  workspaces:
+    - my-workspace

@@ -1,7 +1,7 @@
 import { logger } from './logger.js';
 
 export type CommandLineArguments = {
-  outputDir: string
+  configPath: string
   debugMode: boolean
 };
 
@@ -10,16 +10,16 @@ let cachedArgs: CommandLineArguments | undefined = undefined;
 function parseCommandLineArguments(): CommandLineArguments {
   const args = process.argv.slice(2);
 
-  const outputDir = args[0];
-  if (!outputDir) {
-    logger.error('Usage: planeso-backup <output-directory>');
+  const configPath = args[0];
+  if (!configPath) {
+    logger.error('Usage: planeso-backup <config-file-path>');
     process.exit(1);
   }
 
   const debugMode = args.includes('--debug');
 
   return {
-    outputDir,
+    configPath,
     debugMode,
   };
 }
