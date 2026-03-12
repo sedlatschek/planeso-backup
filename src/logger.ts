@@ -1,9 +1,7 @@
-import pino from "pino";
+import pino from 'pino';
 
 export const logger = pino({
-  name: "plane.so-backup",
+  name: 'plane.so-backup',
   timestamp: pino.stdTimeFunctions.isoTime,
-  transport: {
-    target: 'pino-pretty'
-  },
+  transport: { target: 'pino-pretty' },
 });

@@ -1,6 +1,8 @@
-import type { PlaneSoClient } from "./index.js";
-import { V1ProjectSchema, type V1Project } from "./models/V1Project.js";
-import {  type ResponseArray } from "./response.js";
+import type { PlaneSoClient } from './index.js';
+import {
+  V1ProjectSchema, type V1Project,
+} from './models/V1Project.js';
+import { type ResponseArray } from './response.js';
 
 export class PlaneSoWorkspacesClient {
   public constructor(private readonly client: PlaneSoClient) {}

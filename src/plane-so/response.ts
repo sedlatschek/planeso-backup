@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const responseArraySchema = z.object({
   total_count: z.number(),
@@ -10,6 +10,4 @@ export const responseArraySchema = z.object({
   results: z.array(z.any()),
 });
 
-export type ResponseArray<T> = z.infer<typeof responseArraySchema> & {
-  results: T[];
-}
+export type ResponseArray<T> = z.infer<typeof responseArraySchema> & { results: T[] };

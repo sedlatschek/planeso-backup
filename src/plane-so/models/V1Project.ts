@@ -1,7 +1,5 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export const V1ProjectSchema = z.object({
-	id: z.string(),
-}).loose();
+export const V1ProjectSchema = z.object({ id: z.string() }).loose();
 
 export type V1Project = z.infer<typeof V1ProjectSchema>;
