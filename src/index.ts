@@ -18,14 +18,20 @@ async function main(): Promise<void> {
 
   const config = getConfig();
 
-  const client = new PlaneSoClient({
-    workspaceId: config.PLANE_WORKSPACE,
-    baseUrl: config.PLANE_API_BASE_URL,
-    accessToken: config.PLANE_API_TOKEN,
-  });
-
   const backup = new Backup();
-  await backupWorkspace(client, backup);
+
+  const workspaceIds = config.PLANE_WORKSPACES.split(',').map(s => s.trim());
+  for (const workspaceId of workspaceIds) {
+    logger.info(`Backing up workspace: ${workspaceId}`);
+
+    const client = new PlaneSoClient({
+      workspaceId,
+      baseUrl: config.PLANE_API_BASE_URL,
+      accessToken: config.PLANE_API_TOKEN,
+    });
+    await backupWorkspace(client, backup);
+  }
+
   await backup.finalize(join(outputDir, `planeso_backup_${isoTimestamp()}.zip`));
 }
 
