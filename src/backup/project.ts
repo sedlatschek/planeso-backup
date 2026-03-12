@@ -1,6 +1,8 @@
 import type { PlaneSoClient } from '../plane-so/index.js';
+import type { V1Entity } from '../plane-so/models/V1Entity.js';
 import type { V1Project } from '../plane-so/models/V1Project.js';
 import type { PlaneSoProjectClient } from '../plane-so/namespaces/project.js';
+import type { PlaneSoWorkItemClient } from '../plane-so/namespaces/work-item.js';
 
 export async function gatherProjects(client: PlaneSoClient): Promise<V1Project[]> {
   const { results: projects } = await client.workspace.getV1Projects();
@@ -14,8 +16,8 @@ async function enrichProject(client: PlaneSoProjectClient, project: V1Project): 
   const { results: cycles } = await client.getV1Cycles();
   const { results: modules } = await client.getV1Modules();
   const { results: epics } = await client.getV1Epics();
+  const workItems = await gatherWorkItems(client);
 
-  // TODO: workItems
   // TODO: workItemTypes
 
   return {
@@ -25,5 +27,28 @@ async function enrichProject(client: PlaneSoProjectClient, project: V1Project): 
     cycles,
     modules,
     epics,
+    workItems,
+  };
+}
+
+async function gatherWorkItems(client: PlaneSoProjectClient): Promise<V1Entity[]> {
+  const workItems = (await client.getV1WorkItems()).results.slice(0, 2); // TODO: remove limit and parallize
+
+  return await Promise.all(workItems.map(workItem => enrichWorkItem(client.workItem(workItem.id), workItem)));
+}
+
+async function enrichWorkItem(client: PlaneSoWorkItemClient, workItem: V1Entity): Promise<V1Entity> {
+  const { results: links } = await client.getV1Links();
+  const { results: activities } = await client.getV1Activities();
+  const { results: comments } = await client.getV1Comments();
+  // TODO: attachments
+  // const { results: attachments } = await client.getV1Attachments();
+
+  return {
+    ...workItem,
+    links,
+    activities,
+    comments,
+    // attachments,
   };
 }
