@@ -7,10 +7,17 @@ import { gatherProjects } from './project.js';
 import { gatherTeamspaces } from './teamspace.js';
 
 export async function backupWorkspace(client: PlaneSoClient, backup: Backup): Promise<void> {
-  const projects = await gatherProjects(client);
-  const teamspaces = await gatherTeamspaces(client);
-  const customers = await gatherCustomers(client);
-  const initiatives = await gatherInitiatives(client);
+  const [
+    projects,
+    teamspaces,
+    customers,
+    initiatives,
+  ] = await Promise.all([
+    gatherProjects(client),
+    gatherTeamspaces(client),
+    gatherCustomers(client),
+    gatherInitiatives(client),
+  ]);
 
   backup.add(`${client.workspace.id}.json`, stringify({
     id: client.workspace.id,

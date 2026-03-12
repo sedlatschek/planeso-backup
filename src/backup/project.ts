@@ -12,14 +12,23 @@ export async function gatherProjects(client: PlaneSoClient): Promise<V1Project[]
 }
 
 async function enrichProject(client: PlaneSoProjectClient, project: V1Project): Promise<V1Project> {
-  // TODO: parallize
-  const { results: states } = await client.getV1States();
-  const { results: labels } = await client.getV1Labels();
-  const { results: cycles } = await client.getV1Cycles();
-  const { results: modules } = await client.getV1Modules();
-  const { results: epics } = await client.getV1Epics();
-  const workItemTypes = await gatherWorkItemTypes(client);
-  const workItems = await gatherWorkItems(client);
+  const [
+    { results: states },
+    { results: labels },
+    { results: cycles },
+    { results: modules },
+    { results: epics },
+    workItemTypes,
+    workItems,
+  ] = await Promise.all([
+    client.getV1States(),
+    client.getV1Labels(),
+    client.getV1Cycles(),
+    client.getV1Modules(),
+    client.getV1Epics(),
+    gatherWorkItemTypes(client),
+    gatherWorkItems(client),
+  ]);
 
   return {
     ...project,
@@ -55,10 +64,17 @@ async function gatherWorkItems(client: PlaneSoProjectClient): Promise<V1Entity[]
 }
 
 async function enrichWorkItem(client: PlaneSoWorkItemClient, workItem: V1Entity): Promise<V1Entity> {
-  const { results: links } = await client.getV1Links();
-  const { results: activities } = await client.getV1Activities();
-  const { results: comments } = await client.getV1Comments();
-  const attachments = await client.getV1Attachments();
+  const [
+    { results: links },
+    { results: activities },
+    { results: comments },
+    attachments,
+  ] = await Promise.all([
+    client.getV1Links(),
+    client.getV1Activities(),
+    client.getV1Comments(),
+    client.getV1Attachments(),
+  ]);
 
   return {
     ...workItem,
