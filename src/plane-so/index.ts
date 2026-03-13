@@ -11,6 +11,7 @@ import { PlaneSoInitiativeClient } from './namespaces/initiative.js';
 import { PlaneSoCustomerClient } from './namespaces/customer.js';
 import { PlaneSoBackupResponseValidationError } from './errors/PlaneSoBackupResponseValidationError.js';
 import { PlaneSoBackupError } from './errors/PlaneSoBackupError.js';
+import PQueue from 'p-queue';
 
 export type PlaneSoClientOptions = {
   baseUrl?: string
@@ -24,13 +25,26 @@ export type PlaneSoClientConfig = {
   workspaceId: string
 };
 
+type RateLimit = {
+  remaining: number
+  reset: Date
+};
+
 export class PlaneSoClient {
   private readonly config: PlaneSoClientConfig;
 
   private readonly workspaceClient: PlaneSoWorkspaceClient;
 
-  private lastRequestAt = 0;
-  private queue: Promise<void> = Promise.resolve();
+  private readonly rateLimit: RateLimit = {
+    remaining: 60,
+    reset: new Date(),
+  };
+
+  private readonly queue = new PQueue({
+    concurrency: 1,
+    interval: 60000,
+    intervalCap: 60,
+  });
 
   public constructor(options: PlaneSoClientOptions) {
     this.config = {
@@ -61,40 +75,49 @@ export class PlaneSoClient {
     return new PlaneSoCustomerClient(this, customerId);
   }
 
-  private waitRateLimit(): Promise<void> {
-    // Plane.so is rate limited to 60 requests per minute, so we wait at least 1001ms between requests to be safe.
-    // Uses a promise queue to prevent race conditions when multiple requests are made concurrently.
-    const next = this.queue.then(async () => {
-      const wait = 1001 - (Date.now() - this.lastRequestAt);
-      if (wait > 0) {
-        await new Promise<void>(resolve => setTimeout(resolve, wait));
-      }
-      this.lastRequestAt = Date.now();
-    });
-    this.queue = next.catch(() => {});
-    return next;
+  private async waitForRateLimitReset(): Promise<void> {
+    const now = new Date();
+    if (this.rateLimit.remaining > 1 || this.rateLimit.reset <= now) {
+      return;
+    }
+
+    const waitTime = this.rateLimit.reset.getTime() - now.getTime();
+    logger.warn(`Waiting for rate limit reset in ${waitTime / 1000} seconds...`);
+    await new Promise(resolve => setTimeout(resolve, waitTime));
   }
 
   private async fetchJson(endpoint: string): Promise<unknown> {
-    await this.waitRateLimit();
-    logger.info(`GET ${endpoint}`);
+    return this.queue.add(async () => {
+      await this.waitForRateLimitReset();
 
-    const {
-      baseUrl, accessToken,
-    } = this.config;
-    const url = `${baseUrl}/${endpoint}`;
+      logger.info(`GET ${endpoint} (${this.rateLimit.remaining}/60, resets at ${this.rateLimit.reset.toISOString()})`);
 
-    const response = await fetch(url, { headers: {
-      'X-API-Key': accessToken,
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    } });
+      const {
+        baseUrl, accessToken,
+      } = this.config;
+      const url = `${baseUrl}/${endpoint}`;
 
-    if (!response.ok) {
-      throw new PlaneSoBackupError(`Request failed with status ${response.status}: ${response.statusText}`);
-    }
+      const response = await fetch(url, { headers: {
+        'X-API-Key': accessToken,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      } });
 
-    return response.json();
+      const rateLimitRemaining = response.headers.get('X-RateLimit-Remaining');
+      if (rateLimitRemaining !== null) {
+        this.rateLimit.remaining = Number(rateLimitRemaining) || this.rateLimit.remaining;
+      }
+      const rateLimitReset = response.headers.get('X-RateLimit-Reset');
+      if (rateLimitReset !== null) {
+        this.rateLimit.reset = new Date(Number(rateLimitReset) * 1000);
+      }
+
+      if (!response.ok) {
+        throw new PlaneSoBackupError(`Request failed with status ${response.status}: ${response.statusText}`);
+      }
+
+      return response.json();
+    });
   }
 
   public async getOne<T>(endpoint: string, schema: z.ZodType<T>): Promise<T> {
